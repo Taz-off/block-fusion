@@ -59,7 +59,7 @@
 }
 
 .theme-block-blast {
-  --board-padding: 6px;
+  --board-padding: 10px;
   --page-bg: linear-gradient(180deg, #455fa1 0%, #3d5797 58%, #38508d 100%);
   --panel-bg: rgba(36, 48, 91, 0.58);
   --panel-strong: rgba(34, 43, 82, 0.88);

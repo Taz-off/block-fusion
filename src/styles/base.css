@@ -12,7 +12,7 @@
   --phone-width: min(calc(100vw - 24px), 390px);
   --board-size: min(calc(var(--phone-width) - 30px), 360px);
   --cell-gap: 5px;
-  --board-padding: var(--cell-gap);
+  --board-padding: 10px;
 }
 
 * {

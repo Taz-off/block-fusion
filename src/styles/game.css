@@ -61,7 +61,7 @@
   width: var(--board-size);
   aspect-ratio: 1;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--panel-line);
   border-radius: var(--radius-large);
   background:
@@ -695,14 +695,14 @@
   :root {
     --board-size: min(calc(var(--phone-width) - 30px), 360px);
     --cell-gap: 5px;
-    --board-padding: clamp(7px, 2.1vw, 9px);
+    --board-padding: clamp(10px, 2.8vw, 12px);
   }
 
   .theme-dark,
   .theme-neon,
   .theme-pastel,
   .theme-block-blast {
-    --board-padding: clamp(7px, 2.1vw, 9px);
+    --board-padding: clamp(10px, 2.8vw, 12px);
   }
 
   .game-layout {
