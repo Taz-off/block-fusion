@@ -13,7 +13,6 @@
   --board-size: min(calc(var(--phone-width) - 30px), 360px);
   --cell-gap: 5px;
   --board-padding: var(--cell-gap);
-  --board-bottom-safe: 12px;
 }
 
 * {

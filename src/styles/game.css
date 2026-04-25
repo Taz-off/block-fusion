@@ -53,13 +53,13 @@
   display: grid;
   place-items: center;
   width: 100%;
-  min-height: calc(var(--board-size) + var(--board-bottom-safe));
+  min-height: var(--board-size);
 }
 
 .board-shell {
   position: relative;
   width: var(--board-size);
-  height: calc(var(--board-size) + var(--board-bottom-safe));
+  aspect-ratio: 1;
   isolation: isolate;
   overflow: hidden;
   border: 1px solid var(--panel-line);
@@ -68,10 +68,7 @@
     linear-gradient(145deg, rgba(255, 255, 255, 0.1), transparent 36%),
     var(--grid-bg);
   box-shadow: var(--shadow-soft), inset 0 0 34px rgba(255, 255, 255, 0.05);
-  padding:
-    var(--board-padding)
-    var(--board-padding)
-    calc(var(--board-padding) + var(--board-bottom-safe));
+  padding: var(--board-padding);
 }
 
 .game-grid {
@@ -398,10 +395,7 @@
 
 .board-effects {
   position: absolute;
-  inset:
-    var(--board-padding)
-    var(--board-padding)
-    calc(var(--board-padding) + var(--board-bottom-safe));
+  inset: var(--board-padding);
   z-index: 5;
   pointer-events: none;
 }
@@ -601,6 +595,14 @@
   accent-color: #42f5e9;
 }
 
+.settings-version {
+  justify-self: end;
+  padding: 4px 8px 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
 .theme-block-blast .app {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 18%),
@@ -694,7 +696,6 @@
     --board-size: min(calc(var(--phone-width) - 30px), 360px);
     --cell-gap: 5px;
     --board-padding: clamp(7px, 2.1vw, 9px);
-    --board-bottom-safe: 20px;
   }
 
   .theme-dark,

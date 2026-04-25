@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fusion-blocks-v13';
+const CACHE_NAME = 'fusion-blocks-v14';
 
 const APP_SHELL = [
   './',
