@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fusion-blocks-v12';
+const CACHE_NAME = 'fusion-blocks-v13';
 
 const APP_SHELL = [
   './',
@@ -46,24 +46,40 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+function shouldUseAppFallback(request) {
+  const acceptHeader = request.headers.get('accept') || '';
+  return request.mode === 'navigate' || acceptHeader.includes('text/html');
+}
+
+function fetchAndRefreshCache(request) {
+  return fetch(request).then((networkResponse) => {
+    if (networkResponse && networkResponse.ok) {
+      const copy = networkResponse.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+    }
+
+    return networkResponse;
+  });
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    fetchAndRefreshCache(event.request)
+      .catch(() => caches.match(event.request)
+        .then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
 
-      return fetch(event.request)
-        .then((networkResponse) => {
-          const copy = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return networkResponse;
-        })
-        .catch(() => caches.match('./index.html'));
-    })
+          if (shouldUseAppFallback(event.request)) {
+            return caches.match('./index.html');
+          }
+
+          return Response.error();
+        }))
   );
 });
