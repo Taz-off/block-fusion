@@ -1,0 +1,163 @@
+:root {
+  --color-2: linear-gradient(135deg, #4da3ff, #145bff);
+  --color-4: linear-gradient(135deg, #38d879, #0caa5a);
+  --color-8: linear-gradient(135deg, #ffb14a, #ff7a21);
+  --color-16: linear-gradient(135deg, #ff6674, #e7273c);
+  --color-32: linear-gradient(135deg, #b37cff, #7b4dff);
+  --color-64: linear-gradient(135deg, #ff80d5, #f337a9);
+  --color-128: linear-gradient(135deg, #ffe07a, #f0a91e);
+  --color-256: linear-gradient(135deg, #5ffcff, #00b7d8);
+  --color-512: linear-gradient(135deg, #ff6cff, #c612ff);
+  --color-1024: linear-gradient(135deg, #ffffff, #e3f7ff 52%, #a8ccff);
+  --color-2048: conic-gradient(from 180deg, #fff7a6, #36f1ff, #ff64c8, #8f5cff, #fff7a6);
+  --color-high: linear-gradient(135deg, #ffe97a, #ff512f, #dd2476);
+}
+
+.theme-dark {
+  --page-bg: linear-gradient(145deg, #0b1024 0%, #15183a 46%, #08111f 100%);
+  --panel-bg: rgba(14, 20, 44, 0.74);
+  --panel-strong: rgba(22, 30, 62, 0.92);
+  --panel-line: rgba(255, 255, 255, 0.13);
+  --grid-bg: rgba(4, 9, 22, 0.58);
+  --cell-bg: rgba(255, 255, 255, 0.075);
+  --button-secondary: rgba(255, 255, 255, 0.1);
+  --text-main: #ffffff;
+  --text-soft: #d9e2ff;
+  --text-muted: #9fb0d4;
+  --ambient-one: rgba(54, 241, 255, 0.16);
+  --ambient-two: rgba(255, 100, 200, 0.14);
+}
+
+.theme-neon {
+  --page-bg: linear-gradient(145deg, #07071c 0%, #1d0632 50%, #011d2a 100%);
+  --panel-bg: rgba(13, 8, 35, 0.76);
+  --panel-strong: rgba(26, 11, 55, 0.9);
+  --panel-line: rgba(88, 244, 255, 0.22);
+  --grid-bg: rgba(0, 0, 0, 0.36);
+  --cell-bg: rgba(80, 244, 255, 0.08);
+  --button-secondary: rgba(89, 244, 255, 0.13);
+  --text-main: #f9fbff;
+  --text-soft: #d5f6ff;
+  --text-muted: #8cf6ff;
+  --ambient-one: rgba(143, 92, 255, 0.22);
+  --ambient-two: rgba(66, 245, 233, 0.18);
+}
+
+.theme-pastel {
+  --page-bg: linear-gradient(145deg, #192038 0%, #27334f 52%, #1f2935 100%);
+  --panel-bg: rgba(255, 255, 255, 0.13);
+  --panel-strong: rgba(255, 255, 255, 0.18);
+  --panel-line: rgba(255, 255, 255, 0.23);
+  --grid-bg: rgba(255, 255, 255, 0.14);
+  --cell-bg: rgba(255, 255, 255, 0.16);
+  --button-secondary: rgba(255, 255, 255, 0.16);
+  --text-main: #fffaf5;
+  --text-soft: #f7e9ff;
+  --text-muted: #ffdff2;
+  --ambient-one: rgba(255, 224, 122, 0.16);
+  --ambient-two: rgba(95, 252, 255, 0.14);
+}
+
+.theme-block-blast {
+  --board-padding: 6px;
+  --page-bg: linear-gradient(180deg, #455fa1 0%, #3d5797 58%, #38508d 100%);
+  --panel-bg: rgba(36, 48, 91, 0.58);
+  --panel-strong: rgba(34, 43, 82, 0.88);
+  --panel-line: rgba(187, 211, 255, 0.24);
+  --grid-bg: #22294e;
+  --cell-bg: #2a3159;
+  --button-secondary: rgba(215, 232, 255, 0.14);
+  --text-main: #ffffff;
+  --text-soft: #dce8ff;
+  --text-muted: #c0d1fb;
+  --ambient-one: rgba(255, 210, 87, 0.1);
+  --ambient-two: rgba(80, 132, 255, 0.16);
+  --color-2: linear-gradient(180deg, #88b3ff 0%, #4f72f2 54%, #2d4fca 100%);
+  --color-4: linear-gradient(180deg, #79e88d 0%, #35c95c 54%, #149044 100%);
+  --color-8: linear-gradient(180deg, #ffb46d 0%, #f18a32 54%, #c45a18 100%);
+  --color-16: linear-gradient(180deg, #ff7772 0%, #de3e3b 56%, #a92125 100%);
+  --color-32: linear-gradient(180deg, #c98cff 0%, #8f5af0 56%, #5e35b8 100%);
+  --color-64: linear-gradient(180deg, #ff9bd8 0%, #ef5aaa 54%, #b82d7b 100%);
+  --color-128: linear-gradient(180deg, #ffe982 0%, #f3c744 54%, #c89318 100%);
+  --color-256: linear-gradient(180deg, #78e9ff 0%, #30bfe6 54%, #167ba9 100%);
+  --color-512: linear-gradient(180deg, #ff8e8e 0%, #dc4949 54%, #9f282f 100%);
+  --color-1024: linear-gradient(180deg, #fff7b0 0%, #f1cf4f 48%, #c48f1e 100%);
+  --color-2048: linear-gradient(180deg, #ffffff 0%, #ffe680 38%, #ff9c3d 100%);
+  --color-high: linear-gradient(180deg, #ffffff 0%, #9ee4ff 42%, #5979ff 100%);
+}
+
+.block-value-2,
+.piece-block.block-value-2 {
+  --block-bg: var(--color-2);
+  --block-glow: rgba(77, 163, 255, 0.48);
+}
+
+.block-value-4,
+.piece-block.block-value-4 {
+  --block-bg: var(--color-4);
+  --block-glow: rgba(56, 216, 121, 0.48);
+}
+
+.block-value-8,
+.piece-block.block-value-8 {
+  --block-bg: var(--color-8);
+  --block-glow: rgba(255, 159, 56, 0.5);
+}
+
+.block-value-16,
+.piece-block.block-value-16 {
+  --block-bg: var(--color-16);
+  --block-glow: rgba(255, 77, 93, 0.52);
+}
+
+.block-value-32,
+.piece-block.block-value-32 {
+  --block-bg: var(--color-32);
+  --block-glow: rgba(143, 92, 255, 0.52);
+}
+
+.block-value-64,
+.piece-block.block-value-64 {
+  --block-bg: var(--color-64);
+  --block-glow: rgba(255, 100, 200, 0.5);
+}
+
+.block-value-128,
+.piece-block.block-value-128 {
+  --block-bg: var(--color-128);
+  --block-glow: rgba(255, 209, 102, 0.56);
+  color: #3d2600;
+}
+
+.block-value-256,
+.piece-block.block-value-256 {
+  --block-bg: var(--color-256);
+  --block-glow: rgba(66, 245, 233, 0.5);
+  color: #042a34;
+}
+
+.block-value-512,
+.piece-block.block-value-512 {
+  --block-bg: var(--color-512);
+  --block-glow: rgba(242, 65, 255, 0.5);
+}
+
+.block-value-1024,
+.piece-block.block-value-1024 {
+  --block-bg: var(--color-1024);
+  --block-glow: rgba(255, 255, 255, 0.7);
+  color: #151932;
+}
+
+.block-value-2048,
+.piece-block.block-value-2048 {
+  --block-bg: var(--color-2048);
+  --block-glow: rgba(255, 236, 131, 0.76);
+  color: #101329;
+}
+
+.block-value-high,
+.piece-block.block-value-high {
+  --block-bg: var(--color-high);
+  --block-glow: rgba(255, 117, 140, 0.72);
+}

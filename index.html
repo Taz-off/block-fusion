@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#101329" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Fusion Blocks" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Fusion Blocks</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="public/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="public/icons/icon-192.png" />
+    <link rel="stylesheet" href="src/styles/base.css" />
+    <link rel="stylesheet" href="src/styles/themes.css" />
+    <link rel="stylesheet" href="src/styles/game.css" />
+    <link rel="stylesheet" href="src/styles/animations.css" />
+  </head>
+  <body class="theme-dark">
+    <main class="app" id="app">
+      <section class="screen game-screen active" id="game-screen" aria-labelledby="game-title">
+        <div class="content-shell game-layout">
+          <header class="game-topbar">
+            <div class="score-card">
+              <span>Score</span>
+              <strong id="score-value">0</strong>
+            </div>
+            <div class="score-card">
+              <span>Record</span>
+              <strong id="best-score-value">0</strong>
+            </div>
+            <div class="score-card max-card">
+              <span>Max</span>
+              <strong id="max-block-value">2</strong>
+            </div>
+            <div class="topbar-actions">
+              <button class="icon-button" id="pause-button" type="button" aria-label="Pause">II</button>
+              <button class="icon-button" id="restart-button" type="button" aria-label="Recommencer">&#8635;</button>
+            </div>
+          </header>
+
+          <h2 class="visually-hidden" id="game-title">Grille Fusion Blocks</h2>
+          <section class="board-zone" aria-label="Grille principale 8 par 8">
+            <div class="board-shell" id="board-shell">
+              <div class="board-effects" id="board-effects" aria-hidden="true"></div>
+              <div class="game-grid" id="game-grid"></div>
+            </div>
+            <div class="combo-banner" id="combo-banner" aria-live="polite"></div>
+            <div class="milestone-toast" id="milestone-toast" aria-live="polite"></div>
+          </section>
+
+          <section class="tray-zone" aria-label="Pi&egrave;ces disponibles">
+            <div class="tray-header">
+              <span>Pi&egrave;ces disponibles</span>
+              <button class="text-button" id="game-settings-button" type="button">Param&egrave;tres</button>
+            </div>
+            <div class="piece-tray" id="piece-tray"></div>
+          </section>
+        </div>
+
+        <div class="modal-layer" id="pause-layer" aria-hidden="true">
+          <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+            <h2 id="pause-title">Pause</h2>
+            <button class="primary-button" id="resume-button" type="button">Continuer</button>
+            <button class="secondary-button" id="pause-restart-button" type="button">Recommencer</button>
+          </div>
+        </div>
+
+        <div class="modal-layer" id="game-over-layer" aria-hidden="true">
+          <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
+            <p class="eyebrow">Partie termin&eacute;e</p>
+            <h2 id="game-over-title">Plus aucun placement</h2>
+            <p class="modal-score">Score <strong id="final-score-value">0</strong></p>
+            <button class="primary-button" id="game-over-restart-button" type="button">Rejouer</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen settings-screen" id="settings-screen" aria-labelledby="settings-title">
+        <div class="content-shell settings-layout">
+          <header class="settings-header">
+            <button class="icon-button" id="settings-back-button" type="button" aria-label="Retour">&#8592;</button>
+            <div>
+              <p class="eyebrow">Pr&eacute;f&eacute;rences</p>
+              <h1 id="settings-title">Param&egrave;tres</h1>
+            </div>
+          </header>
+
+          <div class="settings-panel">
+            <label class="setting-row">
+              <span>
+                <strong>Animations</strong>
+                <small>Placements, fusions et transitions.</small>
+              </span>
+              <input id="animations-toggle" type="checkbox" />
+            </label>
+
+            <label class="setting-row">
+              <span>
+                <strong>Particules</strong>
+                <small>&Eacute;clats lumineux quand une ligne dispara&icirc;t.</small>
+              </span>
+              <input id="particles-toggle" type="checkbox" />
+            </label>
+
+            <div class="setting-group">
+              <span class="setting-label">Th&egrave;me</span>
+              <div class="theme-options" id="theme-options" role="group" aria-label="Choisir le th&egrave;me">
+                <button type="button" data-theme="dark">Sombre</button>
+                <button type="button" data-theme="neon">N&eacute;on</button>
+                <button type="button" data-theme="pastel">Pastel</button>
+                <button type="button" data-theme="block-blast">Block Blast</button>
+              </div>
+            </div>
+
+            <label class="setting-group">
+              <span class="setting-label">Volume des sons</span>
+              <input id="volume-range" type="range" min="0" max="1" step="0.05" />
+            </label>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="src/systems/constants.js" defer></script>
+    <script src="src/systems/storage.js" defer></script>
+    <script src="src/systems/audio.js" defer></script>
+    <script src="src/systems/shapes.js" defer></script>
+    <script src="src/systems/game.js" defer></script>
+    <script src="src/systems/pwa.js" defer></script>
+    <script src="src/utils/viewport.js" defer></script>
+    <script src="src/components/effects.js" defer></script>
+    <script src="src/components/renderer.js" defer></script>
+    <script src="src/components/input.js" defer></script>
+    <script src="src/main.js" defer></script>
+  </body>
+</html>

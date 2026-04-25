@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Fusion Blocks">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="56" x2="448" y2="456" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#36f1ff"/>
+      <stop offset=".48" stop-color="#8f5cff"/>
+      <stop offset="1" stop-color="#ff64c8"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="150" y1="112" x2="386" y2="392" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff6a3"/>
+      <stop offset=".5" stop-color="#ffe07a"/>
+      <stop offset="1" stop-color="#f0a91e"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#101329"/>
+  <rect x="34" y="34" width="444" height="444" rx="92" fill="url(#bg)" opacity=".92"/>
+  <rect x="86" y="86" width="144" height="144" rx="32" fill="#4da3ff" filter="url(#glow)"/>
+  <rect x="282" y="86" width="144" height="144" rx="32" fill="#38d879"/>
+  <rect x="86" y="282" width="144" height="144" rx="32" fill="#ff6674"/>
+  <rect x="282" y="282" width="144" height="144" rx="32" fill="url(#gold)" filter="url(#glow)"/>
+  <text x="158" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#fff">2</text>
+  <text x="354" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#fff">4</text>
+  <text x="158" y="374" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#fff">8</text>
+  <text x="354" y="366" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="900" fill="#101329">16</text>
+</svg>
