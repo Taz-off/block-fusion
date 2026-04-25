@@ -1,4 +1,9 @@
-const CACHE_NAME = 'fusion-blocks-v14';
+const CACHE_NAME = 'fusion-blocks-v15';
+const ASSET_VERSION = 'v=1.1';
+
+function versioned(path) {
+  return `${path}?${ASSET_VERSION}`;
+}
 
 const APP_SHELL = [
   './',
@@ -7,21 +12,21 @@ const APP_SHELL = [
   './public/icons/icon.svg',
   './public/icons/icon-192.png',
   './public/icons/icon-512.png',
-  './src/main.js',
-  './src/components/input.js',
-  './src/components/renderer.js',
-  './src/systems/audio.js',
-  './src/systems/constants.js',
-  './src/systems/game.js',
-  './src/systems/pwa.js',
-  './src/systems/shapes.js',
-  './src/systems/storage.js',
-  './src/utils/viewport.js',
-  './src/components/effects.js',
-  './src/styles/animations.css',
-  './src/styles/base.css',
-  './src/styles/game.css',
-  './src/styles/themes.css'
+  versioned('./src/main.js'),
+  versioned('./src/components/input.js'),
+  versioned('./src/components/renderer.js'),
+  versioned('./src/systems/audio.js'),
+  versioned('./src/systems/constants.js'),
+  versioned('./src/systems/game.js'),
+  versioned('./src/systems/pwa.js'),
+  versioned('./src/systems/shapes.js'),
+  versioned('./src/systems/storage.js'),
+  versioned('./src/utils/viewport.js'),
+  versioned('./src/components/effects.js'),
+  versioned('./src/styles/animations.css'),
+  versioned('./src/styles/base.css'),
+  versioned('./src/styles/game.css'),
+  versioned('./src/styles/themes.css')
 ];
 
 self.addEventListener('install', (event) => {

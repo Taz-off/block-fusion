@@ -1,6 +1,8 @@
 (function registerFusionBlocksPwa(global) {
   'use strict';
 
+  const SERVICE_WORKER_URL = './sw.js?v=1.1';
+
   if (!('serviceWorker' in navigator)) {
     return;
   }
@@ -23,7 +25,7 @@
 
   global.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('./sw.js')
+      .register(SERVICE_WORKER_URL)
       .then((registration) => registration.update())
       .catch(() => {
         // The game remains fully playable if the browser refuses service workers.
