@@ -12,10 +12,10 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="public/icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="public/icons/icon-192.png" />
-    <link rel="stylesheet" href="src/styles/base.css?v=1.1.2" />
-    <link rel="stylesheet" href="src/styles/themes.css?v=1.1.2" />
-    <link rel="stylesheet" href="src/styles/game.css?v=1.1.2" />
-    <link rel="stylesheet" href="src/styles/animations.css?v=1.1.2" />
+    <link rel="stylesheet" href="src/styles/base.css?v=1.2.41" />
+    <link rel="stylesheet" href="src/styles/themes.css?v=1.2.41" />
+    <link rel="stylesheet" href="src/styles/game.css?v=1.2.41" />
+    <link rel="stylesheet" href="src/styles/animations.css?v=1.2.41" />
   </head>
   <body class="theme-dark">
     <main class="app" id="app">
@@ -88,13 +88,17 @@
           </header>
 
           <div class="settings-panel">
-            <label class="setting-row">
+            <div class="setting-group">
               <span>
                 <strong>Animations</strong>
-                <small>Placements, fusions et transitions.</small>
+                <small>Choisis l'intensit&eacute; des effets visuels.</small>
               </span>
-              <input id="animations-toggle" type="checkbox" />
-            </label>
+              <div class="option-buttons" id="animation-level-options" role="group" aria-label="Intensit&eacute; des animations">
+                <button type="button" data-animation-level="full">Activ&eacute;es</button>
+                <button type="button" data-animation-level="reduced">R&eacute;duites</button>
+                <button type="button" data-animation-level="off">D&eacute;sactiv&eacute;es</button>
+              </div>
+            </div>
 
             <label class="setting-row">
               <span>
@@ -102,6 +106,38 @@
                 <small>&Eacute;clats lumineux quand une ligne dispara&icirc;t.</small>
               </span>
               <input id="particles-toggle" type="checkbox" />
+            </label>
+
+            <label class="setting-row">
+              <span>
+                <strong>Vibrations</strong>
+                <small>Retour mobile court pour drag, pose, fusion et combo.</small>
+              </span>
+              <input id="vibrations-toggle" type="checkbox" />
+            </label>
+
+            <label class="setting-row">
+              <span>
+                <strong>Effets de combo</strong>
+                <small>Textes arcade, ondes et impulsions de grille.</small>
+              </span>
+              <input id="combo-effects-toggle" type="checkbox" />
+            </label>
+
+            <label class="setting-row">
+              <span>
+                <strong>Pop-ups gros blocs</strong>
+                <small>Annonce rapide pour les nouveaux blocs importants.</small>
+              </span>
+              <input id="milestone-popups-toggle" type="checkbox" />
+            </label>
+
+            <label class="setting-row">
+              <span>
+                <strong>Mode debug</strong>
+                <small>Affiche le compteur FPS pour tester la fluidit&eacute;.</small>
+              </span>
+              <input id="debug-toggle" type="checkbox" />
             </label>
 
             <div class="setting-group">
@@ -119,22 +155,23 @@
               <input id="volume-range" type="range" min="0" max="1" step="0.05" />
             </label>
 
-            <div class="settings-version" aria-label="Version du jeu">V1.1</div>
+            <div class="settings-version" aria-label="Version du jeu">V1.2</div>
           </div>
         </div>
       </section>
     </main>
 
-    <script src="src/systems/constants.js?v=1.1.2" defer></script>
-    <script src="src/systems/storage.js?v=1.1.2" defer></script>
-    <script src="src/systems/audio.js?v=1.1.2" defer></script>
-    <script src="src/systems/shapes.js?v=1.1.2" defer></script>
-    <script src="src/systems/game.js?v=1.1.2" defer></script>
-    <script src="src/systems/pwa.js?v=1.1.2" defer></script>
-    <script src="src/utils/viewport.js?v=1.1.2" defer></script>
-    <script src="src/components/effects.js?v=1.1.2" defer></script>
-    <script src="src/components/renderer.js?v=1.1.2" defer></script>
-    <script src="src/components/input.js?v=1.1.2" defer></script>
-    <script src="src/main.js?v=1.1.2" defer></script>
+    <script src="src/systems/constants.js?v=1.2.41" defer></script>
+    <script src="src/systems/storage.js?v=1.2.41" defer></script>
+    <script src="src/systems/audio.js?v=1.2.41" defer></script>
+    <script src="src/systems/shapes.js?v=1.2.41" defer></script>
+    <script src="src/systems/game.js?v=1.2.41" defer></script>
+    <script src="src/systems/performance.js?v=1.2.41" defer></script>
+    <script src="src/systems/pwa.js?v=1.2.41" defer></script>
+    <script src="src/utils/viewport.js?v=1.2.41" defer></script>
+    <script src="src/components/effects.js?v=1.2.41" defer></script>
+    <script src="src/components/renderer.js?v=1.2.41" defer></script>
+    <script src="src/components/input.js?v=1.2.41" defer></script>
+    <script src="src/main.js?v=1.2.41" defer></script>
   </body>
 </html>

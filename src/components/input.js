@@ -5,12 +5,13 @@
   const { GRID_SIZE } = namespace.Constants;
 
   class InputController {
-    constructor({ engine, renderer, audio, settings, storage }) {
+    constructor({ engine, renderer, audio, settings, storage, performance = null }) {
       this.engine = engine;
       this.renderer = renderer;
       this.audio = audio;
       this.settings = settings;
       this.storage = storage;
+      this.performance = performance;
       this.selectedPieceId = null;
       this.drag = null;
       this.pendingDragFrame = null;
@@ -57,12 +58,32 @@
     }
 
     bindSettings() {
-      document.getElementById('animations-toggle').addEventListener('change', (event) => {
-        this.updateSettings({ animations: event.target.checked });
+      document.getElementById('animation-level-options').addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-animation-level]');
+        if (!button) {
+          return;
+        }
+        this.updateSettings({ animationLevel: button.dataset.animationLevel });
       });
 
       document.getElementById('particles-toggle').addEventListener('change', (event) => {
         this.updateSettings({ particles: event.target.checked });
+      });
+
+      document.getElementById('vibrations-toggle').addEventListener('change', (event) => {
+        this.updateSettings({ vibrations: event.target.checked });
+      });
+
+      document.getElementById('combo-effects-toggle').addEventListener('change', (event) => {
+        this.updateSettings({ comboEffects: event.target.checked });
+      });
+
+      document.getElementById('milestone-popups-toggle').addEventListener('change', (event) => {
+        this.updateSettings({ milestonePopups: event.target.checked });
+      });
+
+      document.getElementById('debug-toggle').addEventListener('change', (event) => {
+        this.updateSettings({ debugMode: event.target.checked });
       });
 
       document.getElementById('volume-range').addEventListener('input', (event) => {
@@ -81,6 +102,15 @@
 
     updateSettings(nextSettings) {
       this.settings = { ...this.settings, ...nextSettings };
+      if (nextSettings.animationLevel) {
+        this.settings.animations = nextSettings.animationLevel !== 'off';
+      }
+      if (Object.prototype.hasOwnProperty.call(nextSettings, 'animations') && !nextSettings.animationLevel) {
+        this.settings.animationLevel = nextSettings.animations ? 'full' : 'off';
+      }
+      if (this.storage.normalizeSettings) {
+        this.settings = this.storage.normalizeSettings(this.settings);
+      }
       this.audio.setVolume(this.settings.volume);
       this.renderer.applySettings(this.settings);
       this.storage.saveSettings(this.settings);
@@ -131,15 +161,23 @@
           piece,
           floatingPiece,
           floatingSize: this.renderer.measureFloatingPiece(floatingPiece),
+          boardMetrics: this.renderer.getBoardMetrics(),
+          viewportBounds: this.renderer.getViewportBounds(),
+          validPlacements: this.engine.getValidPlacementKeys(piece),
           offset: this.getDragOffset(piece),
           sourceElement: pieceButton,
           sourceRect,
           pointerId: event.pointerId,
           lastOrigin: null,
+          lastOriginKey: '',
           lastPreviewKey: '',
           lastFloatingState: '',
           moved: false
         };
+        if (this.performance) {
+          this.performance.setMode('drag');
+        }
+        this.renderer.effects.playDragStart();
         this.updateDrag(event);
 
         document.addEventListener('pointermove', this.handlePointerMove, { passive: false });
@@ -163,7 +201,12 @@
 
         event.preventDefault();
         this.cancelScheduledDragUpdate();
-        const origin = this.getOriginFromPointer(event, this.drag.piece, this.drag.offset);
+        const origin = this.getOriginFromPointer(
+          event,
+          this.drag.piece,
+          this.drag.offset,
+          this.drag.boardMetrics
+        );
         const wasPlaced = origin
           ? this.tryPlaceSelectedPiece(origin.row, origin.col)
           : false;
@@ -210,9 +253,15 @@
         event.clientX,
         event.clientY,
         this.drag.offset,
-        this.drag.floatingSize
+        this.drag.floatingSize,
+        this.drag.viewportBounds
       );
-      const origin = this.getOriginFromPointer(event, this.drag.piece, this.drag.offset);
+      const origin = this.getOriginFromPointer(
+        event,
+        this.drag.piece,
+        this.drag.offset,
+        this.drag.boardMetrics
+      );
 
       if (!origin) {
         this.setFloatingPieceState('outside-grid');
@@ -221,12 +270,19 @@
           this.drag.lastPreviewKey = 'none';
         }
         this.drag.lastOrigin = null;
+        this.drag.lastOriginKey = 'outside';
         return;
       }
 
-      const valid = this.engine.canPlaceBlock(this.drag.piece, origin);
+      const originKey = `${origin.row}:${origin.col}`;
+      if (originKey === this.drag.lastOriginKey) {
+        return;
+      }
+
+      const valid = this.drag.validPlacements.has(originKey);
       const previewKey = valid ? `${origin.row}:${origin.col}` : 'none';
       this.drag.lastOrigin = origin;
+      this.drag.lastOriginKey = originKey;
       this.setFloatingPieceState(valid ? 'can-place' : 'cannot-place');
 
       if (previewKey === this.drag.lastPreviewKey) {
@@ -277,6 +333,10 @@
       }
 
       this.drag = null;
+      this.latestPointer = null;
+      if (this.performance) {
+        this.performance.setMode('idle');
+      }
       this.renderer.clearPreview();
     }
 
@@ -289,12 +349,12 @@
       };
     }
 
-    getOriginFromPointer(event, piece, offset = { x: 0, y: 0 }) {
+    getOriginFromPointer(event, piece, offset = { x: 0, y: 0 }, boardMetrics = null) {
       if (!piece) {
         return null;
       }
 
-      const rect = this.renderer.elements.grid.getBoundingClientRect();
+      const rect = boardMetrics || this.renderer.getBoardMetrics();
       const placementX = event.clientX + offset.x;
       const placementY = event.clientY + offset.y;
       const isInside =
@@ -307,8 +367,8 @@
         return null;
       }
 
-      const col = Math.floor(((placementX - rect.left) / rect.width) * GRID_SIZE);
-      const row = Math.floor(((placementY - rect.top) / rect.height) * GRID_SIZE);
+      const col = Math.min(GRID_SIZE - 1, Math.floor((placementX - rect.left) / rect.cellWidth));
+      const row = Math.min(GRID_SIZE - 1, Math.floor((placementY - rect.top) / rect.cellHeight));
 
       return {
         row: row - Math.floor(piece.height / 2),
@@ -330,6 +390,7 @@
 
       this.selectedPieceId = null;
       this.renderer.setSelectedPiece(null);
+      this.renderer.clearPreview();
       this.renderer.applyTurnEffects(result);
       this.storage.saveBestScore(this.engine.getState().bestScore);
       this.playTurnSounds(result);
@@ -374,8 +435,13 @@
     }
 
     startNewGame() {
+      if (this.drag) {
+        this.cancelScheduledDragUpdate();
+        this.finishDrag();
+      }
       this.selectedPieceId = null;
       this.clearSoundTimers();
+      this.renderer.clearEffectTimers();
       this.engine.newGame();
       this.renderer.setSelectedPiece(null);
       this.renderer.setScreen('game');

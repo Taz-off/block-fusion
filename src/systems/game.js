@@ -65,6 +65,10 @@
         return false;
       }
 
+      return this.canPlaceAt(block, originRow, originCol);
+    }
+
+    canPlaceAt(block, originRow, originCol) {
       // Single placement gate used by preview and final drop to avoid drift.
       for (const cell of block.cells) {
         const row = originRow + cell.row;
@@ -88,13 +92,30 @@
       return this.canPlaceBlock(piece, { row: originRow, col: originCol });
     }
 
+    getValidPlacementKeys(piece) {
+      const validPlacements = new Set();
+      if (!piece || this.state.isPaused || this.state.isGameOver) {
+        return validPlacements;
+      }
+
+      for (let row = 0; row <= GRID_SIZE - piece.height; row += 1) {
+        for (let col = 0; col <= GRID_SIZE - piece.width; col += 1) {
+          if (this.canPlaceAt(piece, row, col)) {
+            validPlacements.add(cellKey(row, col));
+          }
+        }
+      }
+
+      return validPlacements;
+    }
+
     hasAnyMove(pieces = this.state.pieces) {
       return pieces
         .filter(Boolean)
         .some((piece) => {
           for (let row = 0; row <= GRID_SIZE - piece.height; row += 1) {
             for (let col = 0; col <= GRID_SIZE - piece.width; col += 1) {
-              if (this.canPlaceBlock(piece, { row, col })) {
+              if (this.canPlaceAt(piece, row, col)) {
                 return true;
               }
             }
@@ -117,6 +138,7 @@
         merges: [],
         clears: { rows: [], cols: [], cells: [], points: 0 },
         combo: null,
+        newMaxBlock: null,
         milestone: null,
         refilled: false,
         gameOver: false
@@ -153,6 +175,13 @@
         events.combo = {
           level: comboLevel,
           bonus: comboBonus
+        };
+      }
+
+      if (this.state.maxBlock > oldMaxBlock) {
+        events.newMaxBlock = {
+          value: this.state.maxBlock,
+          previous: oldMaxBlock
         };
       }
 
@@ -237,7 +266,7 @@
     }
 
     findMergeGroups() {
-      const visitedCells = new Set();
+      const visitedCells = new Uint8Array(GRID_SIZE * GRID_SIZE);
       const groups = [];
       const directions = [
         { row: -1, col: 0 },
@@ -249,15 +278,16 @@
       for (let row = 0; row < GRID_SIZE; row += 1) {
         for (let col = 0; col < GRID_SIZE; col += 1) {
           const block = this.state.grid[row][col];
-          const currentKey = cellKey(row, col);
+          const currentIndex = row * GRID_SIZE + col;
 
-          if (!block || visitedCells.has(currentKey)) {
+          if (!block || visitedCells[currentIndex]) {
             continue;
           }
 
           const group = [];
           const queue = [{ row, col }];
-          visitedCells.add(currentKey);
+          const groupValue = block.value;
+          visitedCells[currentIndex] = 1;
 
           let queueIndex = 0;
           while (queueIndex < queue.length) {
@@ -265,7 +295,7 @@
             queueIndex += 1;
             group.push(cell);
 
-            directions.forEach((direction) => {
+            for (const direction of directions) {
               const nextRow = cell.row + direction.row;
               const nextCol = cell.col + direction.col;
 
@@ -275,27 +305,27 @@
                 nextCol < 0 ||
                 nextCol >= GRID_SIZE
               ) {
-                return;
+                continue;
               }
 
-              const nextKey = cellKey(nextRow, nextCol);
-              if (visitedCells.has(nextKey)) {
-                return;
+              const nextIndex = nextRow * GRID_SIZE + nextCol;
+              if (visitedCells[nextIndex]) {
+                continue;
               }
 
               const nextBlock = this.state.grid[nextRow][nextCol];
-              if (!nextBlock || nextBlock.value !== block.value) {
-                return;
+              if (!nextBlock || nextBlock.value !== groupValue) {
+                continue;
               }
 
-              visitedCells.add(nextKey);
+              visitedCells[nextIndex] = 1;
               queue.push({ row: nextRow, col: nextCol });
-            });
+            }
           }
 
           if (group.length > 1) {
             groups.push({
-              value: block.value,
+              value: groupValue,
               cells: group,
               target: this.chooseGroupTarget(group)
             });

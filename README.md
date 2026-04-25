@@ -20,6 +20,10 @@ node .\server.js 8080
 
 Puis ouvre `http://localhost:8080/` sur ton téléphone ou ton navigateur. Le jeu reste statique : aucun serveur externe n'est nécessaire.
 
+## Diagnostic performance
+
+Le compteur FPS s'active depuis `Parametres` avec l'option `Mode debug`.
+
 ## PWA
 
 - `manifest.webmanifest` déclare l'application installable.

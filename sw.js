@@ -1,5 +1,5 @@
-const CACHE_NAME = 'fusion-blocks-v17';
-const ASSET_VERSION = 'v=1.1.2';
+const CACHE_NAME = 'fusion-blocks-v59';
+const ASSET_VERSION = 'v=1.2.41';
 
 function versioned(path) {
   return `${path}?${ASSET_VERSION}`;
@@ -18,6 +18,7 @@ const APP_SHELL = [
   versioned('./src/systems/audio.js'),
   versioned('./src/systems/constants.js'),
   versioned('./src/systems/game.js'),
+  versioned('./src/systems/performance.js'),
   versioned('./src/systems/pwa.js'),
   versioned('./src/systems/shapes.js'),
   versioned('./src/systems/storage.js'),

@@ -1,7 +1,7 @@
 (function registerFusionBlocksPwa(global) {
   'use strict';
 
-  const SERVICE_WORKER_URL = './sw.js?v=1.1.2';
+  const SERVICE_WORKER_URL = './sw.js?v=1.2.41';
 
   if (!('serviceWorker' in navigator)) {
     return;

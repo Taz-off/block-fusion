@@ -5,7 +5,7 @@
 
 .merge-pop {
   animation: mergePop 460ms cubic-bezier(0.18, 1.4, 0.3, 1);
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .merge-pop::after {
@@ -17,15 +17,16 @@
 }
 
 .block-legendary {
-  animation: legendaryGlow 1800ms linear infinite;
   transform: translateZ(0);
-  will-change: filter, box-shadow;
+}
+
+.block-legendary::after {
+  animation: legendarySheen 1800ms ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 .merge-pop.block-legendary {
-  animation:
-    mergePop 460ms cubic-bezier(0.18, 1.4, 0.3, 1),
-    legendaryGlow 1800ms linear infinite;
+  animation: mergePop 460ms cubic-bezier(0.18, 1.4, 0.3, 1);
 }
 
 .combo-banner.show {
@@ -43,7 +44,7 @@
 
 .board-shell.combo-impact {
   animation: boardComboPulse 680ms ease-out;
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .board-shell.combo-shake {
@@ -52,8 +53,29 @@
     comboShake 430ms ease-out;
 }
 
+.board-shell.combo-mega {
+  animation:
+    boardComboPulse 780ms ease-out,
+    comboMegaPulse 780ms ease-out;
+}
+
+.board-shell.combo-insane,
+.board-shell.major-merge-pulse {
+  animation:
+    boardComboPulse 880ms ease-out,
+    comboMegaPulse 880ms ease-out;
+}
+
 .floating-piece {
   animation: dragLift 140ms ease-out both;
+}
+
+.screen-effects-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .fusion-cell-glow,
@@ -61,7 +83,9 @@
 .fusion-wave,
 .combo-screen-wave,
 .fusion-sequence-wave,
-.effect-particle {
+.new-max-wave,
+.effect-particle,
+.merge-value-pop {
   position: absolute;
   pointer-events: none;
   will-change: transform, opacity;
@@ -107,7 +131,8 @@
 }
 
 .combo-screen-wave,
-.fusion-sequence-wave {
+.fusion-sequence-wave,
+.new-max-wave {
   inset: 8%;
   border-radius: 999px;
   background:
@@ -129,6 +154,41 @@
   animation-duration: 620ms;
 }
 
+.new-max-wave {
+  inset: 0;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.2), rgba(255, 228, 92, 0.16) 24%, rgba(66, 245, 233, 0.1) 50%, transparent 76%);
+  border-color: rgba(255, 228, 92, 0.28);
+}
+
+.new-max-wave.legendary {
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.28), rgba(255, 228, 92, 0.22) 20%, rgba(255, 79, 216, 0.14) 48%, transparent 78%);
+}
+
+.new-max-wave.subtle {
+  inset: 18%;
+  opacity: 0.75;
+}
+
+.merge-value-pop {
+  z-index: 8;
+  color: #ffffff;
+  font-size: clamp(0.82rem, 4vw, 1.35rem);
+  font-weight: 1000;
+  line-height: 1;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.32),
+    0 0 18px var(--effect-color);
+  transform: translate(-50%, -50%);
+  animation: mergeValuePop 760ms cubic-bezier(0.18, 1.3, 0.3, 1) forwards;
+}
+
+.merge-value-pop.is-huge {
+  font-size: clamp(1rem, 5vw, 1.7rem);
+  color: #ffe45c;
+}
+
 .effect-particle {
   position: absolute;
   width: var(--particle-size);
@@ -138,7 +198,7 @@
   box-shadow: 0 0 16px var(--particle-color);
   opacity: 0;
   transform: translate(-50%, -50%);
-  animation: particleFly 780ms ease-out var(--particle-delay) forwards;
+  animation: particleFly var(--particle-duration, 780ms) ease-out var(--particle-delay) forwards;
 }
 
 .effect-particle.is-square {
@@ -147,11 +207,69 @@
 }
 
 .combo-burst-particle {
-  animation-duration: 860ms;
+  --particle-duration: 860ms;
 }
 
 .line-clear-particle {
-  animation-duration: 720ms;
+  --particle-duration: 720ms;
+}
+
+.screen-dim-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 10, 28, 0.34);
+  opacity: 0;
+  animation: screenDimFlash 540ms ease-out forwards;
+}
+
+.major-block-popup {
+  position: absolute;
+  top: 43%;
+  left: 50%;
+  display: grid;
+  gap: 6px;
+  min-width: min(78vw, 360px);
+  place-items: center;
+  color: #ffffff;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translate(-50%, -50%) scale(0.76);
+  animation: majorBlockPopup 1160ms cubic-bezier(0.18, 1.28, 0.28, 1) forwards;
+}
+
+.major-block-popup strong {
+  color: #fff7b0;
+  font-size: clamp(3rem, 18vw, 6.3rem);
+  font-weight: 1000;
+  line-height: 0.88;
+  text-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.35),
+    0 0 22px rgba(255, 228, 92, 0.82),
+    0 0 56px rgba(255, 145, 209, 0.42);
+}
+
+.major-block-popup span {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(0.86rem, 4vw, 1.25rem);
+  font-weight: 1000;
+  letter-spacing: 0.1em;
+}
+
+.major-block-popup.legendary strong {
+  color: #ffffff;
+  text-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.35),
+    0 0 22px rgba(255, 255, 255, 0.95),
+    0 0 56px rgba(255, 228, 92, 0.72),
+    0 0 78px rgba(255, 79, 216, 0.48);
+}
+
+.screen-burst-particle {
+  z-index: 2;
 }
 
 @keyframes placePop {
@@ -171,19 +289,15 @@
 @keyframes mergePop {
   0% {
     transform: scale(0.8);
-    filter: brightness(1) saturate(1);
   }
   42% {
     transform: scale(1.2);
-    filter: brightness(1.55) saturate(1.35);
   }
   72% {
     transform: scale(0.96);
-    filter: brightness(1.12) saturate(1.12);
   }
   100% {
     transform: scale(1);
-    filter: brightness(1) saturate(1);
   }
 }
 
@@ -221,30 +335,28 @@
   }
 }
 
-@keyframes legendaryGlow {
+@keyframes legendarySheen {
   0% {
-    filter: brightness(1) hue-rotate(0deg);
-    box-shadow: 0 0 18px var(--block-glow), 0 0 34px rgba(255, 255, 255, 0.28);
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
   }
   50% {
-    filter: brightness(1.18) hue-rotate(28deg);
-    box-shadow: 0 0 24px var(--block-glow), 0 0 54px rgba(255, 255, 255, 0.4);
+    opacity: 0.34;
+    transform: scale(1.08) rotate(10deg);
   }
   100% {
-    filter: brightness(1) hue-rotate(0deg);
-    box-shadow: 0 0 18px var(--block-glow), 0 0 34px rgba(255, 255, 255, 0.28);
+    opacity: 0;
+    transform: scale(1.34) rotate(18deg);
   }
 }
 
 @keyframes comboToast {
   0% {
     opacity: 0;
-    filter: blur(4px) saturate(1.4);
     transform: translate(-50%, -18px) scale(0.72);
   }
   18% {
     opacity: 0.92;
-    filter: blur(0) saturate(1.5);
     transform: translate(-50%, 0) scale(1.12);
   }
   62% {
@@ -253,7 +365,6 @@
   }
   100% {
     opacity: 0;
-    filter: blur(2px) saturate(1);
     transform: translate(-50%, -14px) scale(0.92);
   }
 }
@@ -292,15 +403,12 @@
 
 @keyframes boardComboPulse {
   0% {
-    filter: brightness(1) saturate(1);
     transform: scale(1);
   }
   34% {
-    filter: brightness(1.14) saturate(1.22);
     transform: scale(1.012);
   }
   100% {
-    filter: brightness(1) saturate(1);
     transform: scale(1);
   }
 }
@@ -324,12 +432,77 @@
   }
 }
 
+@keyframes comboMegaPulse {
+  0% {
+    filter: brightness(1);
+  }
+  36% {
+    filter: brightness(1.16) saturate(1.12);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
 @keyframes dragLift {
   0% {
     opacity: 0.72;
   }
   100% {
     opacity: 0.88;
+  }
+}
+
+@keyframes mergeValuePop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -28%) scale(0.72);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -72%) scale(1.18);
+  }
+  72% {
+    opacity: 0.92;
+    transform: translate(-50%, -96%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -126%) scale(0.92);
+  }
+}
+
+@keyframes screenDimFlash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  22%,
+  62% {
+    opacity: 1;
+  }
+}
+
+@keyframes majorBlockPopup {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.66);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -58%) scale(0.9);
   }
 }
 
@@ -410,5 +583,10 @@
 
 .no-particles .particle,
 .no-particles .effect-particle {
+  display: none !important;
+}
+
+.reduced-animations .placement-spark,
+.reduced-animations .line-clear-particle {
   display: none !important;
 }

@@ -72,18 +72,18 @@
   --text-muted: #c0d1fb;
   --ambient-one: rgba(255, 210, 87, 0.1);
   --ambient-two: rgba(80, 132, 255, 0.16);
-  --color-2: linear-gradient(180deg, #88b3ff 0%, #4f72f2 54%, #2d4fca 100%);
-  --color-4: linear-gradient(180deg, #79e88d 0%, #35c95c 54%, #149044 100%);
-  --color-8: linear-gradient(180deg, #ffb46d 0%, #f18a32 54%, #c45a18 100%);
-  --color-16: linear-gradient(180deg, #ff7772 0%, #de3e3b 56%, #a92125 100%);
-  --color-32: linear-gradient(180deg, #c98cff 0%, #8f5af0 56%, #5e35b8 100%);
-  --color-64: linear-gradient(180deg, #ff9bd8 0%, #ef5aaa 54%, #b82d7b 100%);
-  --color-128: linear-gradient(180deg, #ffe982 0%, #f3c744 54%, #c89318 100%);
-  --color-256: linear-gradient(180deg, #78e9ff 0%, #30bfe6 54%, #167ba9 100%);
-  --color-512: linear-gradient(180deg, #ff8e8e 0%, #dc4949 54%, #9f282f 100%);
-  --color-1024: linear-gradient(180deg, #fff7b0 0%, #f1cf4f 48%, #c48f1e 100%);
-  --color-2048: linear-gradient(180deg, #ffffff 0%, #ffe680 38%, #ff9c3d 100%);
-  --color-high: linear-gradient(180deg, #ffffff 0%, #9ee4ff 42%, #5979ff 100%);
+  --color-2: linear-gradient(180deg, #ffe36c 0%, #f7c83d 55%, #d99b1f 100%);
+  --color-4: linear-gradient(180deg, #7fa0ff 0%, #4f73f2 54%, #314fc5 100%);
+  --color-8: linear-gradient(180deg, #ffb36a 0%, #ef8938 54%, #c65a1b 100%);
+  --color-16: linear-gradient(180deg, #ff7379 0%, #e8474f 54%, #b92835 100%);
+  --color-32: linear-gradient(180deg, #71e99b 0%, #34c76a 54%, #178a45 100%);
+  --color-64: linear-gradient(180deg, #c991ff 0%, #8d5cf2 54%, #5d37b9 100%);
+  --color-128: linear-gradient(180deg, #70e9ff 0%, #2fbde3 54%, #147ca7 100%);
+  --color-256: linear-gradient(180deg, #ff91d1 0%, #ec57a7 54%, #b82a78 100%);
+  --color-512: linear-gradient(180deg, #d8f56c 0%, #a8cf34 54%, #6f931a 100%);
+  --color-1024: linear-gradient(180deg, #9ea0ff 0%, #6364df 54%, #3f3aa8 100%);
+  --color-2048: linear-gradient(180deg, #fff4a8 0%, #f0bd3d 52%, #d46d22 100%);
+  --color-high: linear-gradient(180deg, #f7fbff 0%, #92defd 42%, #5979ff 100%);
 }
 
 .block-value-2,

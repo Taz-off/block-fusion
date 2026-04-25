@@ -3,6 +3,36 @@
 
   const namespace = global.FusionBlocks;
   const { DEFAULT_SETTINGS, STORAGE_KEYS } = namespace.Constants;
+  const ANIMATION_LEVELS = new Set(['full', 'reduced', 'off']);
+
+  function normalizeSettings(settings = {}) {
+    const savedSettings = { ...settings };
+    if (savedSettings.blockTexture === 'block-blast') {
+      savedSettings.theme = 'block-blast';
+    }
+    delete savedSettings.blockTexture;
+
+    const normalized = {
+      ...DEFAULT_SETTINGS,
+      ...savedSettings
+    };
+
+    if (!ANIMATION_LEVELS.has(savedSettings.animationLevel)) {
+      normalized.animationLevel = savedSettings.animations === false ? 'off' : DEFAULT_SETTINGS.animationLevel;
+    }
+
+    normalized.animations = normalized.animationLevel !== 'off';
+    normalized.particles = Boolean(normalized.particles);
+    normalized.vibrations = Boolean(normalized.vibrations);
+    normalized.comboEffects = Boolean(normalized.comboEffects);
+    normalized.milestonePopups = Boolean(normalized.milestonePopups);
+    normalized.debugMode = Boolean(normalized.debugMode);
+    normalized.volume = Number.isFinite(Number(normalized.volume))
+      ? Number(normalized.volume)
+      : DEFAULT_SETTINGS.volume;
+
+    return normalized;
+  }
 
   function loadBestScore() {
     try {
@@ -29,14 +59,7 @@
         return { ...DEFAULT_SETTINGS };
       }
 
-      const savedSettings = JSON.parse(rawSettings);
-      return {
-        ...DEFAULT_SETTINGS,
-        ...savedSettings,
-        volume: Number.isFinite(Number(savedSettings.volume))
-          ? Number(savedSettings.volume)
-          : DEFAULT_SETTINGS.volume
-      };
+      return normalizeSettings(JSON.parse(rawSettings));
     } catch (error) {
       return { ...DEFAULT_SETTINGS };
     }
@@ -44,7 +67,7 @@
 
   function saveSettings(settings) {
     try {
-      global.localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
+      global.localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(normalizeSettings(settings)));
     } catch (error) {
       // Non-blocking: preferences simply reset next session if storage fails.
     }
@@ -54,6 +77,7 @@
     loadBestScore,
     saveBestScore,
     loadSettings,
-    saveSettings
+    saveSettings,
+    normalizeSettings
   };
 })(window);

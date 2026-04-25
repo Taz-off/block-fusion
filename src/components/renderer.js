@@ -4,9 +4,15 @@
   const namespace = global.FusionBlocks;
   const { GRID_SIZE } = namespace.Constants;
   const numberFormatter = new Intl.NumberFormat('fr-FR');
+  const blockBlastNumberFormatter = new Intl.NumberFormat('en-US');
 
   function formatNumber(value) {
     return numberFormatter.format(Math.floor(value));
+  }
+
+  function formatScoreNumber(value, useBlockBlastStyle) {
+    const formatter = useBlockBlastStyle ? blockBlastNumberFormatter : numberFormatter;
+    return formatter.format(Math.floor(value));
   }
 
   function keyFor(row, col) {
@@ -26,13 +32,15 @@
   }
 
   class Renderer {
-    constructor({ engine, settings }) {
+    constructor({ engine, settings, performance = null }) {
       this.engine = engine;
       this.settings = settings;
+      this.performance = performance;
       this.currentScreen = 'game';
       this.previousScreen = 'game';
       this.selectedPieceId = null;
       this.preview = null;
+      this.previewCells = new Map();
       this.boardCells = new Map();
       this.animationMarks = this.createEmptyMarks();
       this.effectTimers = [];
@@ -54,16 +62,22 @@
         tray: document.getElementById('piece-tray'),
         pauseLayer: document.getElementById('pause-layer'),
         gameOverLayer: document.getElementById('game-over-layer'),
-        animationsToggle: document.getElementById('animations-toggle'),
+        animationLevelOptions: document.getElementById('animation-level-options'),
         particlesToggle: document.getElementById('particles-toggle'),
+        vibrationsToggle: document.getElementById('vibrations-toggle'),
+        comboEffectsToggle: document.getElementById('combo-effects-toggle'),
+        milestonePopupsToggle: document.getElementById('milestone-popups-toggle'),
+        debugToggle: document.getElementById('debug-toggle'),
         volumeRange: document.getElementById('volume-range'),
         themeOptions: document.getElementById('theme-options')
       };
       this.elements.dragLayer = this.ensureDragLayer();
-      this.effects = new namespace.FusionEffects({
+      this.effects = new namespace.EffectManager({
         boardShell: this.elements.boardShell,
         boardEffects: this.elements.boardEffects,
         comboBanner: this.elements.comboBanner,
+        milestoneToast: this.elements.milestoneToast,
+        screen: this.elements.screens.game,
         settings
       });
 
@@ -91,15 +105,26 @@
 
     applySettings(settings) {
       this.settings = settings;
+      const animationLevel = settings.animationLevel || (settings.animations ? 'full' : 'off');
       document.body.classList.remove('theme-dark', 'theme-neon', 'theme-pastel', 'theme-block-blast');
       document.body.classList.add(`theme-${settings.theme}`);
-      document.body.classList.toggle('no-animations', !settings.animations);
-      document.body.classList.toggle('no-particles', !settings.particles);
+      document.body.classList.toggle('no-animations', animationLevel === 'off');
+      document.body.classList.toggle('reduced-animations', animationLevel === 'reduced');
+      document.body.classList.toggle('no-particles', !settings.particles || animationLevel === 'off');
       this.effects.updateSettings(settings);
 
-      this.elements.animationsToggle.checked = settings.animations;
-      this.elements.particlesToggle.checked = settings.particles;
+      this.elements.animationLevelOptions.querySelectorAll('button').forEach((button) => {
+        button.classList.toggle('active', button.dataset.animationLevel === animationLevel);
+      });
+      this.elements.particlesToggle.checked = Boolean(settings.particles);
+      this.elements.vibrationsToggle.checked = Boolean(settings.vibrations);
+      this.elements.comboEffectsToggle.checked = settings.comboEffects !== false;
+      this.elements.milestonePopupsToggle.checked = settings.milestonePopups !== false;
+      this.elements.debugToggle.checked = settings.debugMode;
       this.elements.volumeRange.value = String(settings.volume);
+      if (this.performance) {
+        this.performance.setEnabled(settings.debugMode);
+      }
 
       this.elements.themeOptions.querySelectorAll('button').forEach((button) => {
         button.classList.toggle('active', button.dataset.theme === settings.theme);
@@ -130,10 +155,11 @@
 
     renderGame() {
       const state = this.engine.getState();
-      this.elements.scoreValue.textContent = formatNumber(state.score);
-      this.elements.bestScoreValue.textContent = formatNumber(state.bestScore);
-      this.elements.maxBlockValue.textContent = formatNumber(state.maxBlock);
-      this.elements.finalScoreValue.textContent = formatNumber(state.score);
+      const useBlockBlastScoreStyle = this.settings.theme === 'block-blast';
+      this.elements.scoreValue.textContent = formatScoreNumber(state.score, useBlockBlastScoreStyle);
+      this.elements.bestScoreValue.textContent = formatScoreNumber(state.bestScore, useBlockBlastScoreStyle);
+      this.elements.maxBlockValue.textContent = formatScoreNumber(state.maxBlock, useBlockBlastScoreStyle);
+      this.elements.finalScoreValue.textContent = formatScoreNumber(state.score, useBlockBlastScoreStyle);
       this.renderBoard();
       this.renderPieces();
       this.toggleModal(this.elements.pauseLayer, state.isPaused);
@@ -146,41 +172,47 @@
     }
 
     renderBoard() {
-      const state = this.engine.getState();
-      const previewCells = this.getPreviewCells();
-
       this.ensureBoardCells();
 
       for (let row = 0; row < GRID_SIZE; row += 1) {
         for (let col = 0; col < GRID_SIZE; col += 1) {
-          const key = keyFor(row, col);
-          const slot = this.boardCells.get(key);
-          const block = state.grid[row][col];
-          const preview = previewCells.get(key);
-          const className = preview ? 'grid-cell preview-valid' : 'grid-cell';
-          const signature = this.getCellSignature(key, block, preview);
-
-          if (slot.className !== className) {
-            slot.className = className;
-          }
-
-          if (slot.dataset.renderSignature === signature) {
-            continue;
-          }
-
-          slot.dataset.renderSignature = signature;
-          slot.replaceChildren();
-
-          if (block) {
-            slot.appendChild(this.createBlockElement(block.value, {
-              placed: this.animationMarks.placed.has(key),
-              merged: this.animationMarks.merged.has(key)
-            }));
-          } else if (preview) {
-            const ghostBlock = this.createBlockElement(preview.value, { ghost: true });
-            slot.appendChild(ghostBlock);
-          }
+          this.renderCell(row, col);
         }
+      }
+    }
+
+    renderCell(row, col) {
+      const state = this.engine.getState();
+      const key = keyFor(row, col);
+      const slot = this.boardCells.get(key);
+      const block = state.grid[row][col];
+      const preview = this.previewCells.get(key);
+      const className = preview ? 'grid-cell preview-valid' : 'grid-cell';
+      const signature = this.getCellSignature(key, block, preview);
+
+      if (!slot) {
+        return;
+      }
+
+      if (slot.className !== className) {
+        slot.className = className;
+      }
+
+      if (slot.dataset.renderSignature === signature) {
+        return;
+      }
+
+      slot.dataset.renderSignature = signature;
+      slot.replaceChildren();
+
+      if (block) {
+        slot.appendChild(this.createBlockElement(block.value, {
+          placed: this.animationMarks.placed.has(key),
+          merged: this.animationMarks.merged.has(key)
+        }));
+      } else if (preview) {
+        const ghostBlock = this.createBlockElement(preview.value, { ghost: true });
+        slot.appendChild(ghostBlock);
       }
     }
 
@@ -225,17 +257,17 @@
       return 'empty';
     }
 
-    getPreviewCells() {
+    buildPreviewCells(piece, row, col) {
       const previewCells = new Map();
-      if (!this.preview || !this.preview.piece || !this.preview.valid) {
+      if (!piece) {
         return previewCells;
       }
 
-      this.preview.piece.cells.forEach((cell) => {
-        const row = this.preview.row + cell.row;
-        const col = this.preview.col + cell.col;
-        if (row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE) {
-          previewCells.set(keyFor(row, col), {
+      piece.cells.forEach((cell) => {
+        const cellRow = row + cell.row;
+        const cellCol = col + cell.col;
+        if (cellRow >= 0 && cellRow < GRID_SIZE && cellCol >= 0 && cellCol < GRID_SIZE) {
+          previewCells.set(keyFor(cellRow, cellCol), {
             value: cell.value,
             valid: true
           });
@@ -243,6 +275,25 @@
       });
 
       return previewCells;
+    }
+
+    updatePreviewCells(nextPreviewCells) {
+      this.ensureBoardCells();
+
+      const affectedKeys = new Set([
+        ...this.previewCells.keys(),
+        ...nextPreviewCells.keys()
+      ]);
+
+      this.previewCells = nextPreviewCells;
+      affectedKeys.forEach((key) => {
+        const [row, col] = key.split(':').map(Number);
+        this.renderCell(row, col);
+      });
+
+      if (affectedKeys.size > 0 && this.performance) {
+        this.performance.markPreviewUpdate();
+      }
     }
 
     createBlockElement(value, options = {}) {
@@ -354,16 +405,16 @@
       }
 
       this.preview = { piece, row, col, valid: true, key: previewKey };
-      this.renderBoard();
+      this.updatePreviewCells(this.buildPreviewCells(piece, row, col));
     }
 
     clearPreview() {
-      if (!this.preview) {
+      if (!this.preview && this.previewCells.size === 0) {
         return;
       }
 
       this.preview = null;
-      this.renderBoard();
+      this.updatePreviewCells(new Map());
     }
 
     createFloatingPiece(piece) {
@@ -383,15 +434,42 @@
       };
     }
 
-    positionFloatingPiece(floatingPiece, x, y, offset = { x: 0, y: 0 }, measuredSize = null) {
-      const viewportWidth = global.visualViewport ? global.visualViewport.width : global.innerWidth;
-      const viewportHeight = global.visualViewport ? global.visualViewport.height : global.innerHeight;
+    getBoardMetrics() {
+      const rect = this.elements.grid.getBoundingClientRect();
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        cellWidth: rect.width / GRID_SIZE,
+        cellHeight: rect.height / GRID_SIZE
+      };
+    }
+
+    getViewportBounds() {
+      return {
+        width: global.visualViewport ? global.visualViewport.width : global.innerWidth,
+        height: global.visualViewport ? global.visualViewport.height : global.innerHeight
+      };
+    }
+
+    positionFloatingPiece(
+      floatingPiece,
+      x,
+      y,
+      offset = { x: 0, y: 0 },
+      measuredSize = null,
+      viewportBounds = null
+    ) {
+      const viewport = viewportBounds || this.getViewportBounds();
       const size = measuredSize || this.measureFloatingPiece(floatingPiece);
       const margin = 12;
       const halfWidth = Math.max(40, size.width / 2);
       const halfHeight = Math.max(40, size.height / 2);
-      const centerX = Math.min(Math.max(x + offset.x, halfWidth + margin), viewportWidth - halfWidth - margin);
-      const centerY = Math.min(Math.max(y + offset.y, halfHeight + margin), viewportHeight - halfHeight - margin);
+      const centerX = Math.min(Math.max(x + offset.x, halfWidth + margin), viewport.width - halfWidth - margin);
+      const centerY = Math.min(Math.max(y + offset.y, halfHeight + margin), viewport.height - halfHeight - margin);
 
       floatingPiece.style.transform = `translate3d(${centerX}px, ${centerY}px, 0) translate(-50%, -50%) scale(1.06)`;
     }
@@ -440,19 +518,13 @@
       });
 
       this.renderGame();
-
-      this.effects.playMerges(result.events.merges);
-      this.effects.playLineClear(result.events.clears.cells);
-
-      if (result.events.combo) {
-        this.effects.playCombo(result.events.combo, result.events.merges);
+      if (this.performance) {
+        this.performance.markTurn();
       }
 
-      if (result.events.milestone) {
-        this.showMilestone(result.events.milestone.value);
-      }
+      this.effects.playTurn(result.events);
 
-      if (this.settings.animations) {
+      if ((this.settings.animationLevel || (this.settings.animations ? 'full' : 'off')) !== 'off') {
         const timer = global.setTimeout(() => {
           this.animationMarks = this.createEmptyMarks();
           this.renderBoard();
@@ -468,7 +540,8 @@
     }
 
     shakeBoard() {
-      if (!this.settings.animations) {
+      this.effects.playInvalid();
+      if ((this.settings.animationLevel || (this.settings.animations ? 'full' : 'off')) === 'off') {
         return;
       }
 
