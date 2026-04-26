@@ -494,6 +494,7 @@
 
 .settings-screen {
   display: block;
+  touch-action: pan-y;
 }
 
 .settings-layout {
@@ -506,6 +507,10 @@
   gap: 14px;
   overflow-x: hidden;
   overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings-header {

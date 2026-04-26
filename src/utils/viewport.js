@@ -7,7 +7,27 @@
   }
 
   function canUseNativeTouch(target) {
-    return Boolean(target.closest('input, select, textarea, button'));
+    return Boolean(
+      target.closest('input, select, textarea, button') ||
+      getScrollableAncestor(target)
+    );
+  }
+
+  function getScrollableAncestor(target) {
+    let element = target;
+
+    while (element && element !== document.body) {
+      const style = global.getComputedStyle(element);
+      const canScrollY = /(auto|scroll)/.test(style.overflowY);
+
+      if (canScrollY && element.scrollHeight > element.clientHeight) {
+        return element;
+      }
+
+      element = element.parentElement;
+    }
+
+    return null;
   }
 
   function preventPageMove(event) {

@@ -34,7 +34,7 @@ body {
   overflow: hidden;
   background: var(--page-bg);
   color: var(--text-main);
-  touch-action: none;
+  touch-action: manipulation;
   -webkit-user-select: none;
   user-select: none;
 }

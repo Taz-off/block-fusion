@@ -1,5 +1,5 @@
-const CACHE_NAME = 'fusion-blocks-v59';
-const ASSET_VERSION = 'v=1.2.41';
+const CACHE_NAME = 'fusion-blocks-v60';
+const ASSET_VERSION = 'v=1.2.42';
 
 function versioned(path) {
   return `${path}?${ASSET_VERSION}`;
